@@ -1,18 +1,15 @@
 import { useState } from "react";
 import Searcher from "./components/Searcher";
 import "./App.css";
-import Content from "./components/Content";
-import withresult from "./mocks/with-result.json";
-import withoutresult from "./mocks/without-result.json";
-
+import { Movies } from "./components/Movies";
+import useMovies from "./hooks/useMovies";
 function App() {
-  const [count, setCount] = useState(0);
-  const peliculas = withresult.Search;
-  console.log(peliculas.length);
+  const { mappedMovies } = useMovies();
+
   return (
     <>
       <Searcher />
-      <Content peliculas={peliculas} />
+      <Movies peliculas={mappedMovies} />
     </>
   );
 }
