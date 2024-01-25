@@ -1,11 +1,18 @@
-import React from "react";
+import React, { useState } from "react";
+import { useSearch, useMovies } from "../hooks/useMovies";
+import { Movies } from "./Movies";
+function Searcher() {
+  // const [sort, setSort] = useState(false);
+  const { search, updateSearch, error } = useSearch();
+  const { movies, loading, getMovies } = useMovies(search);
 
-function Searcher({ search, error, updateSearch, getMovies }) {
   // const inputRef = useRef();
 
   // const [query, setQuery] = useState("");
   // const [error, setError] = useState(null);
-
+  // const handleSort = () => {
+  //   setSort((prevSort) => !prevSort);
+  // };
   const handleSubmit = (event) => {
     event.preventDefault();
     //USANDO REACT DE FORMA CONTROLADA
@@ -16,7 +23,6 @@ function Searcher({ search, error, updateSearch, getMovies }) {
     //const fields = Object.fromEntries(new window.FormData(event.target)); //creo un objeto de todos los campos del form
     // console.log(fields); //Object { query: "algo", otro: "Harry", otroMas: "Ron" }
     // console.log(fields.get("query"));
-
     getMovies();
   };
   const handleChange = (event) => {
@@ -41,23 +47,24 @@ function Searcher({ search, error, updateSearch, getMovies }) {
   // }, [query]);
 
   return (
-    <header className="searcher">
-      <form action="" onSubmit={handleSubmit}>
-        <input
-          className="input-searcher"
-          // ref={inputRef}
-          style={{
-            border: "solid 1px transparent",
-            borderColor: error ? "red" : "transparent",
-          }}
-          onChange={handleChange}
-          type="text"
-          name="search"
-          placeholder="Harry Potter and the Sorcerer's Stone"
-          value={search}
-        />
+    <>
+      <header className="searcher">
+        <form action="" onSubmit={handleSubmit}>
+          <input
+            className="input-searcher"
+            // ref={inputRef}
+            style={{
+              border: "solid 1px transparent",
+              borderColor: error ? "red" : "transparent",
+            }}
+            onChange={handleChange}
+            type="text"
+            name="search"
+            placeholder="Harry Potter and the Sorcerer's Stone"
+            value={search}
+          />
 
-        {/* <input
+          {/* <input
           className="input-searcher"
           type="text"
           name="otro"
@@ -69,10 +76,19 @@ function Searcher({ search, error, updateSearch, getMovies }) {
           name="otroMas"
           placeholder="Ron Weasly"
         /> */}
-        <button type="submit">search</button>
-      </form>
-      {error && <p style={{ color: "red" }}>{error}</p>}
-    </header>
+          {/* <input type="checkbox" value={sort} onClick={handleSort} /> */}
+          <button type="submit">search</button>
+        </form>
+        {error && <p style={{ color: "red" }}>{error}</p>}
+      </header>
+      <main>
+        {loading ? (
+          <p style={{ textAlign: "center" }}>Loading ...</p>
+        ) : (
+          <Movies peliculas={movies} />
+        )}
+      </main>
+    </>
   );
 }
 

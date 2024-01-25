@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { searchMovies } from "../services/movies";
+import { Linter } from "eslint";
 
 export function useSearch() {
   //para sacar la logica del componente
@@ -35,6 +36,7 @@ export function useMovies(search) {
   const previusSearch = useRef(search);
   console.log("search, prevSearch ", search, previusSearch);
   const getMovies = async () => {
+    console.log("submit");
     if (search === previusSearch.current) {
       return;
     } // si el search actual es igual al search anterior, no hagas busqueda
@@ -43,6 +45,7 @@ export function useMovies(search) {
       setError(null);
       previusSearch.current = search;
       const newMovies = await searchMovies(search);
+      //  console.log(newMovies);
       setMovies(newMovies);
     } catch (e) {
       setError(e.message);
@@ -50,6 +53,17 @@ export function useMovies(search) {
       setLoading(false);
     }
   };
-
+  // const getSortedMovies = () => {
+  //   // let moviesSorted = [...movies];
+  //   const sortedMovies = movies;
+  //   // Sorted.sort((a, b) => a.title.localCompare(b.title));
+  //   console.log(
+  //     "sortedmovies: ",
+  //     sortedMovies,
+  //     typeof sortedMovies[0].title,
+  //     typeof movies
+  //   );
+  //   return sortedMovies;
+  // };
   return { movies, loading, getMovies };
 }
