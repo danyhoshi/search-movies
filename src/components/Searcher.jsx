@@ -1,19 +1,14 @@
-import React, { useEffect, useRef, useState } from "react";
-import { userSearch } from "../hooks/useMovies";
+import React from "react";
 
-function Searcher() {
+function Searcher({ search, error, updateSearch, getMovies }) {
   // const inputRef = useRef();
 
   // const [query, setQuery] = useState("");
   // const [error, setError] = useState(null);
-  const { search, updateSearch, error } = userSearch(); // custome Hook
-  const counter = useRef(0);
-  counter.current++;
-  console.log("counterSearcher: ", counter.current);
+
   const handleSubmit = (event) => {
     event.preventDefault();
     //USANDO REACT DE FORMA CONTROLADA
-    console.log(search);
     //USANDO EL DOM Y DE FORMA NO CONTROLADA
     // const input = inputRef.current;
     // const valorInput = input.value;
@@ -21,6 +16,8 @@ function Searcher() {
     //const fields = Object.fromEntries(new window.FormData(event.target)); //creo un objeto de todos los campos del form
     // console.log(fields); //Object { query: "algo", otro: "Harry", otroMas: "Ron" }
     // console.log(fields.get("query"));
+
+    getMovies();
   };
   const handleChange = (event) => {
     if (event.target.value.startsWith(" ")) return; //prevalidacion
