@@ -28,12 +28,12 @@ export function useSearch() {
   return { search, updateSearch, error };
 }
 
-export function useMovies(search) {
+export function useMovies(search, sort) {
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const previusSearch = useRef(search);
-  console.log("search, prevSearch ", search, previusSearch);
+  console.log("sort", sort);
   const getMovies = async () => {
     if (search === previusSearch.current) {
       return;
@@ -50,6 +50,11 @@ export function useMovies(search) {
       setLoading(false);
     }
   };
-
-  return { movies, loading, getMovies };
+  const getSortedMovies = () => {
+    const sortedMovies = sort
+      ? [...movies].sort((a, b) => a.title.localeCompare(b.title))
+      : movies;
+    return sortedMovies;
+  };
+  return { movies: getSortedMovies(), loading, getMovies };
 }
