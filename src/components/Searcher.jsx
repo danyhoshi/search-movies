@@ -1,12 +1,19 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { useMovies, useSearch } from "../hooks/useMovies";
 import { Movies } from "./Movies";
+import debounce from "just-debounce-it";
 
 function Searcher() {
   const [sort, setSort] = useState(false);
   const { search, updateSearch, error } = useSearch(); // custome Hook
 
   const { movies, loading, getMovies } = useMovies(search, sort);
+  const debouncedGetMovies = useCallback(
+    debounce((search) => {
+      getMovies(search);
+    }, 300),
+    [getMovies]
+  );
   // const inputRef = useRef();
 
   // const [query, setQuery] = useState("");
@@ -25,11 +32,13 @@ function Searcher() {
     // console.log(fields); //Object { query: "algo", otro: "Harry", otroMas: "Ron" }
     // console.log(fields.get("query"));
 
-    getMovies();
+    getMovies(search);
   };
   const handleChange = (event) => {
     if (event.target.value.startsWith(" ")) return; //prevalidacion
     updateSearch(event.target.value);
+    debouncedGetMovies(event.target.value);
+    // getMovies(search);
   };
   // useEffect(() => {
   //   if (query === "") {

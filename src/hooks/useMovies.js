@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { searchMovies } from "../services/movies";
 
 export function useSearch() {
@@ -34,7 +34,10 @@ export function useMovies(search, sort) {
   const [error, setError] = useState(null);
   const previusSearch = useRef(search);
   console.log("sort", sort);
-  const getMovies = async () => {
+  //USECALLBACK LO USAMOS PARA EXACTAMENTE LO MISMO QUE EL USEMEMO CUANDO ES UNA FUNCION LO QUE QUEREMOS PASAR PERO PASAND DIRECTAMENTE LA FUNCION, SIN TENER QUE HACER EL ()=>
+  //PARA QUE GETMOVIES() SOLO SE EJECUTE CUANDO CAMBIA EL SEARCH, NO CUANDO ORDENA
+  const getMovies = useCallback(async (search) => {
+    console.log("getMovies");
     if (search === previusSearch.current) {
       return;
     } // si el search actual es igual al search anterior, no hagas busqueda
@@ -49,12 +52,42 @@ export function useMovies(search, sort) {
     } finally {
       setLoading(false);
     }
-  };
-  const getSortedMovies = () => {
-    const sortedMovies = sort
+  }, []);
+  // USEMEMO TAMBIEN SIRVE PARA RETORNAR FUNCIONES
+  // const getMovies = useMemo(() => {
+  //   return async (search) => {
+  //     console.log("getMovies");
+  //     if (search === previusSearch.current) {
+  //       return;
+  //     } // si el search actual es igual al search anterior, no hagas busqueda
+  //     try {
+  //       setLoading(true);
+  //       setError(null);
+  //       previusSearch.current = search;
+  //       const newMovies = await searchMovies(search);
+  //       setMovies(newMovies);
+  //     } catch (e) {
+  //       setError(e.message);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+  // }, []);
+
+  //CON ESTA FORMA SE EJECUTA ESTA FUNCION CON CADA CAMBIO DEL SEARCH
+  // const getSortedMovies = () => {
+  //   const sortedMovies = sort
+  //     ? [...movies].sort((a, b) => a.title.localeCompare(b.title))
+  //     : movies;
+  //   return sortedMovies;
+  // };
+  // DE ESTA FORMA SE EJECUTA SOLO CUANDO CAMBIA LAS DEPENDENCAS MOVIES Y SORT
+  //ASEGURATE QUE VERDADERAMENTE NECESITAS EL USEMEMO POR UN PROBLEMA DE RENDIMIENTO, NO USAR INDISCRIMINADAMENTE
+  const sortedMovies = useMemo(() => {
+    console.log("Memo sorted");
+    return sort
       ? [...movies].sort((a, b) => a.title.localeCompare(b.title))
       : movies;
-    return sortedMovies;
-  };
-  return { movies: getSortedMovies(), loading, getMovies };
+  }, [sort, movies]); // va a ejecutar dependiendo de las depedencias, guarda el valor, tambien ejecuta funciones en funcion de las dependencias
+  return { movies: sortedMovies, loading, getMovies };
 }
